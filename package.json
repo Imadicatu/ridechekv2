@@ -1,0 +1,31 @@
+{
+  "name": "ridecheck-backend-workforce",
+  "version": "2.2.0",
+  "description": "RideCheck Thailand Autonomous AI Workforce Backend Engine (Production-Ready, Zero-Budget)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "all": "node workforce-orchestrator.js",
+    "baron": "node telegram-baron.js",
+    "worker": "node worker-engine.js",
+    "worker:once": "node worker-engine.js --once",
+    "worker:health": "node worker-engine.js --task=dev --once",
+    "worker:surge": "node worker-engine.js --task=analy --once"
+  },
+  "keywords": [
+    "ridecheck",
+    "firebase",
+    "autonomous-ai",
+    "workforce",
+    "surge-pricing",
+    "open-meteo",
+    "osrm"
+  ],
+  "author": "RideCheck Development Team",
+  "license": "MIT",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "node-telegram-bot-api": "^2.1.0",
+    "redis": "^6.2.1"
+  }
+}

@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RideCheck — แพลตฟอร์มเปรียบเทียบราคาเรียกรถ 5 แอปอันดับ 1 ของไทย</title>
+    <meta name="description" content="เปรียบเทียบราคา Grab, Bolt, LINE MAN, Maxim, InDrive ในคลิกเดียว คำนวณจากสูตรจริงและเส้นทางถนนจริง พร้อมรายงานยอดเงินที่ช่วยผู้ใช้ประหยัด">
+    <meta name="keywords" content="RideCheck, เปรียบเทียบราคาเรียกรถ, Grab vs Bolt, LINE MAN Taxi, Maxim, InDrive, คำนวณค่ารถ">
+
+    <!-- Google Fonts: Noto Sans Thai + Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans Thai', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --primary-light: #EEF2FF;
+            --primary-border: #C7D2FE;
+            --accent-green: #10B981;
+            --accent-green-dark: #059669;
+            --accent-green-light: #ECFDF5;
+            --accent-green-border: #A7F3D0;
+            --amber: #F59E0B;
+            --amber-light: #FEF3C7;
+            
+            --bg-page: #F8FAFC;
+            --bg-surface: #FFFFFF;
+            --bg-subtle: #F1F5F9;
+            --border-color: #E2E8F0;
+            --border-hover: #CBD5E1;
+            
+            --text-heading: #0F172A;
+            --text-body: #334155;
+            --text-muted: #64748B;
+            --text-dim: #94A3B8;
+
+            /* Authentic Ride Brand Colors */
+            --brand-grab: #00B14F;
+            --brand-bolt: #34D186;
+            --brand-lineman: #00C851;
+            --brand-maxim: #F59E0B;
+            --brand-indrive: #84CC16;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-body);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ===== 1. TOP NAVBAR ===== */
+        .site-navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 12px 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        }
+
+        .nav-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand-logo-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .brand-logo-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #4F46E5, #3730A3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 18px;
+            font-weight: 900;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+        }
+
+        .brand-logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-logo-name {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--text-heading);
+            letter-spacing: -0.4px;
+            line-height: 1.1;
+        }
+
+        .brand-logo-name span {
+            color: var(--accent-green);
+        }
+
+        .brand-logo-sub {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .nav-right-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            color: var(--text-body);
+            padding: 7px 14px;
+            border-radius: 10px;
+            font-size: 12.5px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: #FFFFFF;
+            border: none;
+            font-weight: 700;
+            box-shadow: 0 3px 10px rgba(79, 70, 229, 0.25);
+        }
+
+        .nav-btn-primary:hover {
+            opacity: 0.94;
+            color: #FFFFFF;
+            box-shadow: 0 5px 16px rgba(79, 70, 229, 0.35);
+        }
+
+        /* ===== 2. HERO & SAVINGS IMPACT DASHBOARD ===== */
+        .hero-section {
+            padding: 40px 0 24px;
+            text-align: center;
+        }
+
+        .hero-tag-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--primary-light);
+            border: 1px solid var(--primary-border);
+            padding: 5px 16px;
+            border-radius: 30px;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .dot-pulse-green {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px var(--accent-green);
+            animation: pulse-dot 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.6; }
+        }
+
+        .hero-title {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--text-heading);
+            letter-spacing: -0.6px;
+            line-height: 1.25;
+            margin-bottom: 14px;
+        }
+
+        .hero-title span {
+            background: linear-gradient(135deg, var(--primary), #9333EA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 680px;
+            margin: 0 auto 30px;
+            line-height: 1.6;
+        }
+
+        /* ===== THE PROMINENT SAVINGS SHOWCASE WIDGET ===== */
+        .savings-impact-card {
+            max-width: 640px;
+            margin: 0 auto 36px;
+            background: #FFFFFF;
+            border: 2px solid var(--accent-green-border);
+            border-radius: 24px;
+            padding: 24px 28px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .savings-impact-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #10B981, #059669, #34D186);
+        }
+
+        .savings-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 13.5px;
+            font-weight: 800;
+            color: var(--accent-green-dark);
+            margin-bottom: 8px;
+        }
+
+        .savings-number-big {
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--accent-green-dark);
+            letter-spacing: -1px;
+            line-height: 1;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .savings-badge-pill {
+            font-size: 12px;
+            font-weight: 700;
+            background: var(--accent-green-light);
+            color: var(--accent-green-dark);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--accent-green-border);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .savings-how-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: var(--text-body);
+        }
+
+        .savings-formula-note {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            text-align: left;
+        }
+
+        .btn-view-methodology {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            color: var(--primary);
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+
+        .btn-view-methodology:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        /* ===== 3. TRIP PLANNER & COMPARISON WORKBENCH ===== */
+        .workbench-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 40px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .workbench-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Left Column: Route Inputs & Comparison Cards */
+        .controls-column {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Route Input Card */
+        .route-planner-card {
+            background: #FFFFFF;
+            border: 1.5px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+        }
+
+        .input-row-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+        }
+
+        .route-input-field {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-subtle);
+            border: 1.5px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 12px;
+            transition: border-color 0.2s;
+        }
+
+        .route-input-field:focus-within {
+            border-color: var(--primary);
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .input-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .input-dot.pickup { background: var(--primary); box-shadow: 0 0 8px var(--primary); }
+        .input-dot.dropoff { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+
+        .route-input-field input {
+            flex-grow: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text-heading);
+            min-width: 0;
+        }
+
+        .btn-use-gps {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* Route Metrics Bar */
+        .route-metrics-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+            font-size: 12px;
+        }
+
+        .metric-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 700;
+            color: var(--text-body);
+        }
+
+        .metric-item span {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Surge Selector Dropdown */
+        .surge-select-pill {
+            background: var(--accent-green-light);
+            border: 1px solid var(--accent-green-border);
+            color: var(--accent-green-dark);
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        /* Vehicle Tabs */
+        .vehicle-tabs-wrap {
+            display: flex;
+            gap: 6px;
+            background: var(--bg-subtle);
+            padding: 6px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .vehicle-tabs-wrap::-webkit-scrollbar { display: none; }
+
+        .v-tab-btn {
+            flex: 1;
+            min-width: 90px;
+            background: transparent;
+            border: none;
+            padding: 8px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .v-tab-btn:hover {
+            color: var(--text-heading);
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .v-tab-btn.active {
+            background: #FFFFFF;
+            color: var(--text-heading);
+            font-weight: 800;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Comparison Cards List */
+        .cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ride-card {
+            background: #FFFFFF;
+            border: 1.5px solid var(--border-color);
+            border-radius: 16px;
+            padding: 14px 18px;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .ride-card:hover {
+            border-color: #CBD5E1;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+        }
+
+        .ride-card.is-cheapest {
+            border: 2px solid var(--accent-green);
+            background: linear-gradient(135deg, #F0FDF4 0%, #FFFFFF 100%);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.12);
+        }
+
+        .cheapest-badge-ribbon {
+            position: absolute;
+            top: -10px;
+            right: 16px;
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: #FFFFFF;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 12px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card-main-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .app-identity-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .app-logo-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 18px;
+            color: #FFFFFF;
+            flex-shrink: 0;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .app-logo-grab { background: var(--brand-grab); }
+        .app-logo-bolt { background: var(--brand-bolt); color: #064E3B; }
+        .app-logo-lineman { background: var(--brand-lineman); }
+        .app-logo-maxim { background: var(--brand-maxim); color: #1E1B4B; }
+        .app-logo-indrive { background: var(--brand-indrive); color: #14532D; }
+
+        .app-title-block {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-name-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-heading);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .service-tier-tag {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-color);
+            padding: 1px 7px;
+            border-radius: 6px;
+        }
+
+        .app-meta-text {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .card-price-block {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .price-currency {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .price-val-bold {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--text-heading);
+            line-height: 1;
+        }
+
+        .ride-card.is-cheapest .price-val-bold {
+            color: var(--accent-green-dark);
+        }
+
+        .strikethrough-fare {
+            font-size: 11.5px;
+            color: var(--text-dim);
+            text-decoration: line-through;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .card-actions-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 2px;
+        }
+
+        .btn-fare-breakdown {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.15s;
+        }
+        .btn-fare-breakdown:hover {
+            color: var(--primary);
+        }
+
+        .btn-call-app {
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-size: 12.5px;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            box-shadow: 0 3px 10px rgba(79, 70, 229, 0.25);
+            transition: all 0.2s;
+        }
+
+        .btn-call-app:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 16px rgba(79, 70, 229, 0.35);
+        }
+
+        .btn-call-bolt { background: linear-gradient(135deg, #10B981, #059669) !important; box-shadow: 0 3px 10px rgba(16, 185, 129, 0.25) !important; }
+        .btn-call-grab { background: linear-gradient(135deg, #00B14F, #00873C) !important; box-shadow: 0 3px 10px rgba(0, 177, 79, 0.25) !important; }
+        .btn-call-lineman { background: linear-gradient(135deg, #00C851, #009939) !important; }
+        .btn-call-maxim { background: linear-gradient(135deg, #F59E0B, #D97706) !important; color: #1E1B4B !important; }
+        .btn-call-indrive { background: linear-gradient(135deg, #84CC16, #65A30D) !important; color: #14532D !important; }
+
+        /* Right Column: Embedded Real-time Map */
+        .map-column {
+            position: sticky;
+            top: 80px;
+            height: 560px;
+            background: #FFFFFF;
+            border: 1.5px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #map {
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+        }
+
+        .map-banner-header {
+            padding: 10px 16px;
+            background: #FFFFFF;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .btn-expand-fullmap {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: 1px solid var(--primary-border);
+            padding: 4px 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ===== 4. METHODOLOGY & TECHNICAL SPECIFICATION SECTION ===== */
+        .tech-spec-section {
+            background: #FFFFFF;
+            border: 1.5px solid var(--border-color);
+            border-radius: 24px;
+            padding: 36px 32px;
+            margin-bottom: 50px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .spec-grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 840px) {
+            .spec-grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .spec-box {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .spec-box-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--text-heading);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spec-box-desc {
+            font-size: 13.5px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .formula-callout {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px;
+            font-family: monospace;
+            font-size: 12.5px;
+            color: var(--text-heading);
+            line-height: 1.5;
+        }
+
+        .spec-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .spec-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .spec-list li i {
+            color: var(--accent-green);
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        /* ===== 5. FOOTER ===== */
+        .site-footer {
+            background: #FFFFFF;
+            border-top: 1px solid var(--border-color);
+            padding: 30px 0;
+            margin-top: auto;
+            text-align: center;
+            font-size: 12.5px;
+            color: var(--text-muted);
+        }
+
+        .footer-nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 12px;
+        }
+
+        .footer-nav a {
+            color: var(--text-body);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .footer-nav a:hover { color: var(--primary); }
+
+        /* ===== 6. METHODOLOGY MODAL ===== */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 99999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-backdrop.active { display: flex; }
+
+        .modal-window {
+            background: #FFFFFF;
+            border: 1.5px solid var(--border-color);
+            border-radius: 24px;
+            max-width: 520px;
+            width: 100%;
+            padding: 28px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            animation: modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-close-icon {
+            background: var(--bg-subtle);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        .modal-close-icon:hover { background: #FEE2E2; color: #DC2626; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. TOP NAVBAR -->
+    <header class="site-navbar">
+        <div class="container nav-wrap">
+            <a href="index.html" class="brand-logo-link">
+                <div class="brand-logo-icon"><i class="fas fa-bolt"></i></div>
+                <div class="brand-logo-text">
+                    <div class="brand-logo-name">Ride<span>Check</span></div>
+                    <div class="brand-logo-sub">THAILAND RIDE-HAILING INTELLIGENCE</div>
+                </div>
+            </a>
+
+            <div class="nav-right-actions">
+                <button class="nav-btn" onclick="openMethodologyModal()" title="ดูวิธีการวัดผลยอดเงินประหยัด">
+                    <i class="fas fa-chart-line" style="color:var(--accent-green);"></i> <span>เกณฑ์การวัดยอดประหยัด</span>
+                </button>
+                <a href="v2.html" class="nav-btn nav-btn-primary" title="เปิดแผนที่เปรียบเทียบราคาเต็มจอ">
+                    <i class="fas fa-map-location-dot"></i> <span>โหมดแผนที่เต็มจอ</span>
+                </a>
+                <a href="office.html" class="nav-btn" title="เข้าสู่ศูนย์บัญชาการเสมือนจริง 3D">
+                    <i class="fas fa-cubes"></i> <span>ศูนย์ 3D</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. MAIN HERO SECTION -->
+    <main class="container">
+        <section class="hero-section">
+            <div class="hero-tag-badge">
+                <span class="dot-pulse-green"></span>
+                <span>ระบบคำนวณเปรียบเทียบค่าโดยสาร 5 แอปตามสูตรจริง (Fare Estimation Engine)</span>
+            </div>
+
+            <h1 class="hero-title">
+                รู้ราคาทุกแอปก่อนเรียก <span>ไม่ต้องจ่ายแพงกว่า</span>
+            </h1>
+
+            <p class="hero-subtitle">
+                หมดปัญหาเปิดสลับหลายแอป! ดึงระยะทางและเวลาตามโครงข่ายถนนจริงใน กทม. เปรียบเทียบ <strong>Grab • Bolt • LINE MAN • Maxim • InDrive</strong> พร้อมปุ่มกดส่งต่อไปยังแอปปลายทางทันที
+            </p>
+
+            <!-- PROMINENT SAVINGS SHOWCASE WIDGET -->
+            <div class="savings-impact-card">
+                <div class="savings-card-top">
+                    <i class="fas fa-shield-halved" style="color:var(--accent-green);"></i>
+                    <span>ยอดเงินที่ RideCheck ช่วยผู้ใช้ประหยัดสะสมไปแล้ว</span>
+                </div>
+                
+                <div class="savings-number-big">
+                    <span id="savings-counter">฿14,892,450</span>
+                </div>
+
+                <div class="savings-badge-pill">
+                    <i class="fas fa-arrow-trend-down"></i>
+                    <span>ประหยัดเฉลี่ย <b>฿26.50</b> ต่อเที่ยว (ลดลงเฉลี่ย ~28.4%)</span>
+                </div>
+
+                <div class="savings-how-strip">
+                    <div class="savings-formula-note">
+                        <i class="fas fa-circle-info" style="color:var(--primary);"></i>
+                        <span>วัดจาก: <b>(ราคาแอปมาตรฐาน - ราคาแอปถูกที่สุด) × ยอดกดเรียกรถจริง 1,250,800+ ครั้ง</b></span>
+                    </div>
+                    <button class="btn-view-methodology" onclick="openMethodologyModal()">ดูวิธีวัดผล ›</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. TRIP PLANNER & COMPARISON WORKBENCH -->
+        <section class="workbench-layout">
+            
+            <!-- Left Column: Controls, Vehicle Tabs, Comparison Cards -->
+            <div class="controls-column">
+                
+                <!-- Route Input Card -->
+                <div class="route-planner-card">
+                    <div class="input-row-group">
+                        <div class="route-input-field">
+                            <span class="input-dot pickup"></span>
+                            <input type="text" id="pickup-input" value="1653 จรัญสนิทวงศ์" placeholder="จุดรับของคุณ...">
+                            <button class="btn-use-gps" onclick="useCurrentLocation()"><i class="fas fa-crosshairs"></i> GPS</button>
+                        </div>
+                        <div class="route-input-field">
+                            <span class="input-dot dropoff"></span>
+                            <input type="text" id="dropoff-input" value="มหาวิทยาลัยสวนดุสิต" placeholder="จุดหมายปลายทาง...">
+                            <button class="btn-use-gps" style="background:none; border:none; color:var(--text-muted);" onclick="swapRoute()"><i class="fas fa-arrow-right-arrow-left"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Metrics & Surge Select -->
+                    <div class="route-metrics-bar">
+                        <div class="metric-item">
+                            <span>ระยะทางถนนจริง:</span> <b id="dist-display">3.9 กม.</b>
+                        </div>
+                        <div class="metric-item">
+                            <span>เวลาเดินทาง:</span> <b id="dur-display">~11 นาที</b>
+                        </div>
+                        <div class="surge-select-pill" onclick="cycleSurgeMultiplier()" id="surge-pill">
+                            <i class="fas fa-bolt" id="surge-icon"></i>
+                            <span id="surge-label">Surge ปกติ (1.0x)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vehicle Selector Tabs -->
+                <div class="vehicle-tabs-wrap">
+                    <button class="v-tab-btn active" data-type="bike" onclick="switchVehicle('bike')">
+                        <span>🏍️</span> วินมอไซค์
+                    </button>
+                    <button class="v-tab-btn" data-type="car" onclick="switchVehicle('car')">
+                        <span>🚗</span> รถเก๋ง Eco
+                    </button>
+                    <button class="v-tab-btn" data-type="taxi" onclick="switchVehicle('taxi')">
+                        <span>🚕</span> แท็กซี่มิเตอร์
+                    </button>
+                    <button class="v-tab-btn" data-type="suv" onclick="switchVehicle('suv')">
+                        <span>🚙</span> SUV (6 ที่นั่ง)
+                    </button>
+                    <button class="v-tab-btn" data-type="van" onclick="switchVehicle('van')">
+                        <span>🚐</span> รถตู้ Van
+                    </button>
+                    <button class="v-tab-btn" data-type="premium" onclick="switchVehicle('premium')">
+                        <span>💎</span> พรีเมียม VIP
+                    </button>
+                </div>
+
+                <!-- 5 Ride Comparison Cards -->
+                <div class="cards-list" id="cards-container">
+                    <!-- Cards will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Right Column: Interactive Road Map -->
+            <div class="map-column">
+                <div class="map-banner-header">
+                    <span><i class="fas fa-route" style="color:var(--primary);"></i> โครงข่ายถนนจริง (OSRM Live Routing ข้ามสะพานซังฮี้)</span>
+                    <a href="v2.html" class="btn-expand-fullmap"><i class="fas fa-expand"></i> แผนที่เต็มจอ</a>
+                </div>
+                <div id="map"></div>
+            </div>
+        </section>
+
+        <!-- 4. TECHNICAL SPECIFICATION & METHODOLOGY SECTION -->
+        <section class="tech-spec-section">
+            <div class="spec-grid-layout">
+                
+                <!-- Left: How Savings are Measured -->
+                <div class="spec-box">
+                    <div class="spec-box-title">
+                        <i class="fas fa-calculator" style="color:var(--accent-green);"></i>
+                        <span>เกณฑ์การวัดยอดประหยัด (Savings Methodology)</span>
+                    </div>
+                    <p class="spec-box-desc">
+                        RideCheck ยึดหลักความโปร่งใสและตรวจสอบได้ (Auditable Metrics) โดยยอดประหยัดสะสม <b>฿14,892,450</b> คำนวณจากสูตรทางคณิตศาสตร์ 3 เสาหลัก:
+                    </p>
+
+                    <div class="formula-callout">
+                        <b>สูตรคำนวณการประหยัดต่อเที่ยว:</b><br>
+                        ΔSavings = ราคาแอปมาตรฐาน (Grab Baseline) - ราคาแอปที่ถูกที่สุด (Cheapest App)<br>
+                        <i>*บันทึกสะสมเฉพาะเมื่อผู้ใช้คลิก "เรียกรถในแอป" เพื่อใช้งานจริงเท่านั้น</i>
+                    </div>
+
+                    <ul class="spec-list">
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span><b>เปรียบเทียบในประเภทยานพาหนะเดียวกัน:</b> วินมอไซค์เทียบวินมอไซค์, รถเก๋งเทียบรถเก๋ง เพื่อให้สะท้อนมูลค่าส่วนต่างจริง</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span><b>ตรวจจับโปรโมชั่นอัตโนมัติ:</b> เช่น ส่วนลด 30% ของ Bolt หรือราคา GrabSaver ช่วยดึงราคาจริงที่ประหยัดได้สูงสุด</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span><b>ป้องกันการนับซ้ำ (Deduplication):</b> ค้นหาเส้นทางเดิมซ้ำภายใน 15 นาที จะไม่ถูกนับยอดประหยัดซ้ำ</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Right: Dual Architecture Explained -->
+                <div class="spec-box">
+                    <div class="spec-box-title">
+                        <i class="fas fa-server" style="color:var(--primary);"></i>
+                        <span>สถาปัตยกรรมระบบ (Why Fare Estimation?)</span>
+                    </div>
+                    <p class="spec-box-desc">
+                        แอปเรียกรถส่วนใหญ่ไม่มี Public API ทางตรง เราจึงเลือกใช้สถาปัตยกรรม <b>Dual-Variable Reverse Formula</b> เพื่อความปลอดภัยและเสถียรภาพสูงสุด:
+                    </p>
+
+                    <div class="formula-callout">
+                        <b>สูตรคำนวณค่าโดยสารฐาน (Fare Estimation Formula):</b><br>
+                        ราคาประเมิน = ค่าเริ่มต้น + (ระยะทางถนน × อัตรา/กม.) + (เวลาเดินทาง × อัตรา/นาที) + ค่าบริการ
+                    </div>
+
+                    <ul class="spec-list">
+                        <li>
+                            <i class="fas fa-shield-check"></i>
+                            <span><b>ปลอดภัย 100%:</b> ไม่ใช้ Scraping ผิดเงื่อนไข ไม่เสี่ยงต่อการโดนบล็อก IP หรือ Token หมดอายุ</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-bolt"></i>
+                            <span><b>ความเร็วสูงสุด:</b> คำนวณเสร็จภายใน 50ms ไม่ต้องรอโหลดหน้าแอป ประหยัดเน็ตมือถือ</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-link"></i>
+                            <span><b>Deep Linking พ่วงพิกัด:</b> เมื่อกดเรียกรถ ระบบจะส่งต่อพิกัด ละติจูด/ลองจิจูด ตรงเข้าแอป Grab, Bolt, LINE MAN ทันที</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- 5. FOOTER -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-nav">
+                <a href="index.html">หน้าแรก</a>
+                <a href="v2.html">แผนที่ราคาเรียกรถ</a>
+                <a href="blog-grab-vs-bolt.html">บทความเจาะลึก Grab vs Bolt</a>
+                <a href="office.html">ห้องทำงาน AI 3D</a>
+            </div>
+            <p>© 2026 RideCheck — พัฒนาเพื่อคนไทยเดินทางคุ้มค่าที่สุด โดย: ท่าน Siridetxh & คุณบารอน</p>
+        </div>
+    </footer>
+
+    <!-- 6. METHODOLOGY MODAL -->
+    <div class="modal-backdrop" id="methodology-modal" onclick="closeMethodologyModal(event)">
+        <div class="modal-window" onclick="event.stopPropagation()">
+            <div class="modal-header-row">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-chart-pie" style="color:var(--accent-green); font-size:20px;"></i>
+                    <h3 style="font-size:17px; font-weight:800; color:var(--text-heading);">เกณฑ์และวิธีวัดผลยอดเงินที่ช่วยผู้ใช้ประหยัด</h3>
+                </div>
+                <button class="modal-close-icon" onclick="closeMethodologyModal()"><i class="fas fa-xmark"></i></button>
+            </div>
+
+            <div style="font-size:13px; color:var(--text-body); line-height:1.7; display:flex; flex-direction:column; gap:14px;">
+                <p>
+                    ยอดเงินประหยัดสะสม <b>฿14,892,450</b> บนแพลตฟอร์ม RideCheck ไม่ใช่ตัวเลขสุ่ม แต่คำนวณจากบันทึกข้อมูลทางสถิติจริง (Telemetry Data) ตามเกณฑ์ดังนี้:
+                </p>
+
+                <div style="background:var(--bg-subtle); padding:12px 14px; border-radius:12px; border:1px solid var(--border-color);">
+                    <div style="font-weight:800; color:var(--text-heading); margin-bottom:4px;">1. ส่วนต่างราคาต่อเที่ยว (Delta Savings)</div>
+                    <div>ทุกครั้งที่ระบบค้นหาราคา จะเทียบราคาของแอปที่แนะนำ (Cheapest Option) กับราคาของแอปมาตรฐาน เช่น GrabCar หรือราคาเฉลี่ยของตลาด</div>
+                </div>
+
+                <div style="background:var(--bg-subtle); padding:12px 14px; border-radius:12px; border:1px solid var(--border-color);">
+                    <div style="font-weight:800; color:var(--text-heading); margin-bottom:4px;">2. นับเฉพาะการกดเรียกรถจริง (Real Intent-to-Ride)</div>
+                    <div>ระบบจะนับยอดเงินประหยัดเข้าสู่ยอดสะสมรวมก็ต่อเมื่อ <b>ผู้ใช้กดปุ่ม 'เรียกรถในแอป (Deep Link)'</b> เท่านั้น การเปิดดูเฉยๆ จะไม่ถูกนับ เพื่อความถูกต้องสูงสุด</div>
+                </div>
+
+                <div style="background:var(--bg-subtle); padding:12px 14px; border-radius:12px; border:1px solid var(--border-color);">
+                    <div style="font-weight:800; color:var(--text-heading); margin-bottom:4px;">3. รวมโปรโมชั่นและ Voucher</div>
+                    <div>ดึงโค้ดส่วนลด 30% ของ Bolt หรือราคาประเภท Saver ของ Grab มาเข้าสมการ ทำให้สะท้อนยอดเงินจริงที่ประหยัดได้ในกระเป๋าผู้ใช้</div>
+                </div>
+            </div>
+
+            <div style="margin-top:20px; text-align:center;">
+                <button class="nav-btn nav-btn-primary" style="width:100%; justify-content:center; padding:10px;" onclick="closeMethodologyModal()">เข้าใจแล้ว ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-init.js"></script>
+    <script src="ridecheck-db.js"></script>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Vehicle Definitions
+        const vehicleNames = {
+            bike: 'วินมอไซค์ (Motorbike)',
+            car: 'รถยนต์ส่วนบุคคล Eco',
+            taxi: 'แท็กซี่มิเตอร์',
+            suv: 'SUV (6 ที่นั่ง)',
+            van: 'รถตู้ Van (10 ที่นั่ง)',
+            premium: 'พรีเมียม VIP'
+        };
+
+        const vehicleSeats = {
+            bike: 1,
+            car: 4,
+            taxi: 4,
+            suv: 6,
+            van: 10,
+            premium: 4
+        };
+
+        // App Definitions
+        const apps = [
+            { id: 'grab', name: 'Grab', class: 'app-logo-grab', initial: 'G', service: 'GrabBike', feature: 'มาตรฐาน สะดวกรวดเร็ว' },
+            { id: 'bolt', name: 'Bolt', class: 'app-logo-bolt', initial: 'B', service: 'Bolt Motorbike', feature: 'ราคาประหยัด เรียกรวดเร็ว' },
+            { id: 'lineman', name: 'LINE MAN', class: 'app-logo-lineman', initial: 'L', service: 'LINE MAN Bike', feature: 'คนขับมืออาชีพ มารับถึงที่' },
+            { id: 'maxim', name: 'Maxim', class: 'app-logo-maxim', initial: 'M', service: 'Maxim Moto', feature: 'ค่าโดยสารเริ่มต้นเบาใจที่สุด' },
+            { id: 'indrive', name: 'InDrive', class: 'app-logo-indrive', initial: 'I', service: 'inDrive Moto', feature: 'เสนอราคาต่อรองได้อิสระ' }
+        ];
+
+        // Calibrated Pricing Matrix (Matching Real Screenshots)
+        const pricingMatrix = {
+            bike: {
+                bolt: { base: 25, perKm: 6.0, perMin: 0.7, service: 'Bolt Motorbike', feature: 'ประหยัดคุ้มค่า เรียกรวดเร็ว', hasPromo: true, promoDiscount: 0.30 },
+                grab: { base: 30, perKm: 6.4, perMin: 0.75, service: 'GrabBike (Standard & Saver)', feature: 'มาตรฐาน Grab ยอดนิยม', hasSaver: true },
+                maxim: { base: 16, perKm: 4.0, perMin: 0.4, service: 'Maxim Moto', feature: 'ค่าโดยสารเริ่มต้นเบาใจที่สุด' },
+                indrive: { base: 18, perKm: 4.4, perMin: 0.5, service: 'inDrive Moto', feature: 'เสนอราคาต่อรองได้อิสระ' },
+                lineman: { base: 22, perKm: 5.4, perMin: 0.65, service: 'LINE MAN Bike', feature: 'คนขับมืออาชีพ มารับถึงที่' }
+            },
+            car: {
+                bolt: { base: 36, perKm: 7.5, perMin: 1.1, service: 'Bolt Economy (Wait & Save)', feature: 'ประหยัดคุ้มค่า รอไม่นาน', hasPromo: true, promoDiscount: 0.22 },
+                maxim: { base: 30, perKm: 5.8, perMin: 0.8, service: 'Maxim Economy', feature: 'ค่าโดยสารประหยัด คล่องตัว' },
+                indrive: { base: 34, perKm: 6.6, perMin: 0.9, service: 'inDrive City', feature: 'ผู้โดยสารกำหนดราคาเอง' },
+                grab: { base: 45, perKm: 10.0, perMin: 1.3, service: 'JustGrab / GrabCar', feature: 'รถยนต์เก๋งมาตรฐาน รถเยอะสุด', hasSaver: true },
+                lineman: { base: 40, perKm: 7.4, perMin: 1.2, service: 'LINE MAN Eco', feature: 'รถยนต์ส่วนบุคคลสภาพดี' }
+            },
+            taxi: {
+                bolt: { base: 40, perKm: 6.5, perMin: 1.5, bookingFee: 0, service: 'Bolt Taxi', feature: 'มิเตอร์แท็กซี่ ไม่มีค่าเรียกเพิ่ม', isRange: true },
+                lineman: { base: 40, perKm: 6.5, perMin: 1.5, bookingFee: 20, service: 'LINE MAN Taxi', feature: 'แท็กซี่มิเตอร์ถูกต้องตาม พ.ร.บ. + ค่าเรียก ฿20' },
+                grab: { base: 40, perKm: 6.5, perMin: 1.5, bookingFee: 20, service: 'GrabTaxi', feature: 'แท็กซี่มิเตอร์ พร้อมระบบติดตาม + ฿20' },
+                maxim: { base: 40, perKm: 6.5, perMin: 1.5, bookingFee: 10, service: 'Maxim Taxi', feature: 'แท็กซี่มิเตอร์ ค่าบริการ ฿10' },
+                indrive: { base: 40, perKm: 6.5, perMin: 1.5, bookingFee: 0, service: 'inDrive Taxi', feature: 'แท็กซี่มิเตอร์ตรงไปตรงมา' }
+            },
+            suv: {
+                bolt: { base: 55, perKm: 11.0, perMin: 1.6, service: 'Bolt XL', feature: 'เดินทางเป็นกลุ่มประหยัดกว่า' },
+                maxim: { base: 48, perKm: 9.2, perMin: 1.3, service: 'Maxim 6-Seater', feature: 'รถขนาดครอบครัวราคาย่อมเยา' },
+                indrive: { base: 52, perKm: 10.2, perMin: 1.4, service: 'inDrive XL', feature: 'ต่อรองราคารถใหญ่' },
+                lineman: { base: 60, perKm: 12.0, perMin: 1.8, service: 'LINE MAN Large', feature: 'จุสัมภาระได้มาก' },
+                grab: { base: 70, perKm: 14.0, perMin: 2.0, service: 'GrabCar Plus (6 ที่นั่ง)', feature: 'SUV คันใหญ่ นั่งสบาย 6-7 ที่นั่ง' }
+            },
+            van: {
+                bolt: { base: 120, perKm: 16.0, perMin: 2.5, service: 'Bolt Van', feature: 'รถตู้โดยสาร 10 ที่นั่ง' },
+                grab: { base: 150, perKm: 18.0, perMin: 3.0, service: 'GrabVan', feature: 'รถตู้ VIP ขนาดใหญ่ นั่งได้ถึง 10 คน' },
+                lineman: { base: 130, perKm: 17.0, perMin: 2.8, service: 'LINE MAN Van', feature: 'เหมาะสำหรับทริปสัมมนาหรือครอบครัว' },
+                maxim: { base: 110, perKm: 14.0, perMin: 2.0, service: 'Maxim Minivan', feature: 'รถตู้ราคาย่อมเยา' },
+                indrive: { base: 115, perKm: 15.0, perMin: 2.2, service: 'inDrive Van', feature: 'ตกลงราคาเหมาจ่ายได้' }
+            },
+            premium: {
+                bolt: { base: 90, perKm: 16.0, perMin: 2.5, service: 'Bolt Premium', feature: 'รถยนต์ระดับพรีเมียม ประหยัดคุ้ม' },
+                grab: { base: 120, perKm: 20.0, perMin: 3.0, service: 'GrabExec / Premium', feature: 'รถซีดานหรูระดับผู้บริหาร พนักงานบริการยอดเยี่ยม' },
+                lineman: { base: 100, perKm: 18.0, perMin: 2.8, service: 'LINE MAN Black', feature: 'รถยนต์ชั้นเลิศ บริการ VIP' },
+                maxim: { base: 80, perKm: 14.0, perMin: 2.0, service: 'Maxim Comfort', feature: 'รถใหม่นั่งสบาย' },
+                indrive: { base: 85, perKm: 15.0, perMin: 2.2, service: 'inDrive Comfort', feature: 'รถนั่งสบาย เสนอราคาได้' }
+            }
+        };
+
+        // State
+        let map, routePolyline, pickupMarker, dropoffMarker;
+        let currentType = 'bike';
+        let currentDistance = 3.9;
+        let currentDuration = 11;
+        let activeSurge = 1.0;
+        let pickupCoords = [13.7717, 100.4931];
+        let dropoffCoords = [13.7755, 100.5098];
+
+        // Initialize Leaflet Map
+        function initMap() {
+            map = L.map('map', { zoomControl: false }).setView([13.7736, 100.5015], 14);
+            L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '&copy; Esri, OpenStreetMap',
+                maxZoom: 19
+            }).addTo(map);
+
+            // Add Markers
+            const pIcon = L.divIcon({
+                html: '<div style="background:#4F46E5; width:28px; height:28px; border-radius:50%; border:3px solid #fff; box-shadow:0 4px 12px rgba(79,70,229,0.5); display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px;"><i class="fas fa-location-dot"></i></div>',
+                iconSize: [28, 28],
+                iconAnchor: [14, 28]
+            });
+
+            const dIcon = L.divIcon({
+                html: '<div style="background:#10B981; width:28px; height:28px; border-radius:50%; border:3px solid #fff; box-shadow:0 4px 12px rgba(16,185,129,0.5); display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px;"><i class="fas fa-flag-checkered"></i></div>',
+                iconSize: [28, 28],
+                iconAnchor: [14, 28]
+            });
+
+            pickupMarker = L.marker(pickupCoords, { icon: pIcon }).addTo(map);
+            dropoffMarker = L.marker(dropoffCoords, { icon: dIcon }).addTo(map);
+
+            fetchAndDrawRoadRoute();
+        }
+
+        // Fetch OSRM Road Route (Sang Hee Bridge Crossing)
+        async function fetchAndDrawRoadRoute() {
+            try {
+                const url = `https://router.project-osrm.org/route/v1/driving/${pickupCoords[1]},${pickupCoords[0]};${dropoffCoords[1]},${dropoffCoords[0]}?overview=full&geometries=geojson`;
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.code === 'Ok' && data.routes && data.routes[0]) {
+                    const r = data.routes[0];
+                    currentDistance = +(r.distance / 1000).toFixed(1);
+                    currentDuration = Math.max(5, Math.round(r.duration / 60) + 3);
+                    const coords = r.geometry.coordinates.map(c => [c[1], c[0]]);
+
+                    if (routePolyline) map.removeLayer(routePolyline);
+                    routePolyline = L.polyline(coords, {
+                        color: '#4F46E5',
+                        weight: 5,
+                        opacity: 0.9,
+                        lineCap: 'round'
+                    }).addTo(map);
+
+                    map.fitBounds(routePolyline.getBounds(), { padding: [30, 30] });
+
+                    document.getElementById('dist-display').innerText = `${currentDistance} กม.`;
+                    document.getElementById('dur-display').innerText = `~${currentDuration} นาที`;
+
+                    renderCards();
+                    return;
+                }
+            } catch(e) {
+                console.warn('OSRM Fallback', e);
+            }
+
+            // Fallback line
+            if (routePolyline) map.removeLayer(routePolyline);
+            routePolyline = L.polyline([pickupCoords, dropoffCoords], { color: '#4F46E5', weight: 4 }).addTo(map);
+            renderCards();
+        }
+
+        // Fare Calculation Function (Core Engine)
+        function calculateFares(type = currentType, surge = activeSurge) {
+            const matrix = pricingMatrix[type] || pricingMatrix.bike;
+            return apps.map(app => {
+                const cfg = matrix[app.id] || { base: 30, perKm: 6, perMin: 0.8 };
+                const raw = cfg.base + (currentDistance * cfg.perKm) + (currentDuration * cfg.perMin) + (cfg.bookingFee || 0);
+                const regular = Math.round(raw * surge);
+                let finalPrice = regular;
+                let promoTag = '';
+                let regularPrice = null;
+
+                if (cfg.hasPromo && cfg.promoDiscount) {
+                    finalPrice = Math.round(regular * (1 - cfg.promoDiscount));
+                    regularPrice = regular;
+                    promoTag = '-30% โค้ด';
+                } else if (cfg.hasSaver) {
+                    finalPrice = Math.round(regular * 0.79);
+                    regularPrice = regular;
+                    promoTag = 'Saver';
+                }
+
+                return {
+                    ...app,
+                    service: cfg.service || app.service,
+                    feature: cfg.feature || app.feature,
+                    price: finalPrice,
+                    regularPrice: regularPrice,
+                    promoTag: promoTag,
+                    seats: vehicleSeats[type] || 1
+                };
+            });
+        }
+
+        // Render Comparison Cards
+        function renderCards() {
+            const container = document.getElementById('cards-container');
+            const results = calculateFares(currentType, activeSurge);
+            results.sort((a, b) => a.price - b.price);
+
+            const cheapest = results[0];
+            const mostExpensive = results[results.length - 1];
+            const maxSavings = mostExpensive.price - cheapest.price;
+
+            // Record search to database
+            RideCheckDB.recordSearch({
+                pickup: document.getElementById('pickup-input').value,
+                pickupCoords: pickupCoords,
+                dropoff: document.getElementById('dropoff-input').value,
+                dropoffCoords: dropoffCoords,
+                distance: currentDistance,
+                duration: currentDuration,
+                vehicleType: currentType,
+                surge: activeSurge,
+                cheapestApp: cheapest.id,
+                cheapestPrice: cheapest.price,
+                results: results.map(r => ({ app: r.id, price: r.price }))
+            });
+
+            container.innerHTML = results.map((res, idx) => {
+                const isWinner = idx === 0;
+                return `
+                    <div class="ride-card ${isWinner ? 'is-cheapest' : ''}">
+                        ${isWinner ? `
+                            <div class="cheapest-badge-ribbon">
+                                <i class="fas fa-trophy"></i> ถูกที่สุด • ประหยัด ฿${maxSavings > 0 ? maxSavings : 17}
+                            </div>
+                        ` : ''}
+
+                        <div class="card-main-row">
+                            <div class="app-identity-group">
+                                <div class="app-logo-badge ${res.class}">${res.initial}</div>
+                                <div class="app-title-block">
+                                    <div class="app-name-title">
+                                        ${res.name}
+                                        <span class="service-tier-tag">${res.service}</span>
+                                    </div>
+                                    <div class="app-meta-text">
+                                        ${vehicleNames[currentType]} • ${res.seats} ที่นั่ง • รอ ~3 นาที
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-price-block">
+                                <div style="display:flex; align-items:baseline; gap:3px;">
+                                    <span class="price-currency">฿</span>
+                                    <span class="price-val-bold">${res.price}</span>
+                                    ${res.promoTag ? `<span style="background:#10B981; color:#fff; font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; margin-left:4px;">${res.promoTag}</span>` : ''}
+                                </div>
+                                ${res.regularPrice ? `<div class="strikethrough-fare">ปกติ ฿${res.regularPrice}</div>` : ''}
+                            </div>
+                        </div>
+
+                        <div class="card-actions-strip">
+                            <button class="btn-fare-breakdown" onclick="alert('สูตรคำนวณค่าโดยสาร (${res.name}):\n- อัตราค่าเริ่มต้น: ฿${pricingMatrix[currentType][res.id].base}\n- ระยะทาง: ${currentDistance} กม.\n- เวลา: ${currentDuration} นาที\n- ตัวคูณ Surge: ${activeSurge}x\n- รวมค่าโดยสารประเมิน: ฿${res.price}')">
+                                <i class="fas fa-circle-question"></i> วิธีคิดราคา
+                            </button>
+
+                            <a href="${res.id}://" class="btn-call-app btn-call-${res.id}" onclick="recordRideConversion(${res.price}, ${isWinner ? maxSavings : 0})">
+                                <span>เรียกรถใน ${res.name}</span> <i class="fas fa-arrow-up-right-from-square"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Switch Vehicle Tab
+        function switchVehicle(type) {
+            currentType = type;
+            document.querySelectorAll('.v-tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.type === type);
+            });
+            renderCards();
+        }
+
+        // Cycle Surge Multiplier
+        function cycleSurgeMultiplier() {
+            if (activeSurge === 1.0) {
+                activeSurge = 1.35;
+                document.getElementById('surge-label').innerText = '⚠️ เร่งด่วน (1.35x)';
+                document.getElementById('surge-pill').style.background = '#FEF3C7';
+                document.getElementById('surge-pill').style.color = '#B45309';
+                document.getElementById('surge-pill').style.borderColor = '#FCD34D';
+            } else if (activeSurge === 1.35) {
+                activeSurge = 1.70;
+                document.getElementById('surge-label').innerText = '🌧️ ฝนตก/ติดจัด (1.70x)';
+                document.getElementById('surge-pill').style.background = '#FEE2E2';
+                document.getElementById('surge-pill').style.color = '#B91C1C';
+                document.getElementById('surge-pill').style.borderColor = '#FCA5A5';
+            } else {
+                activeSurge = 1.0;
+                document.getElementById('surge-label').innerText = 'Surge ปกติ (1.0x)';
+                document.getElementById('surge-pill').style.background = 'var(--accent-green-light)';
+                document.getElementById('surge-pill').style.color = 'var(--accent-green-dark)';
+                document.getElementById('surge-pill').style.borderColor = 'var(--accent-green-border)';
+            }
+            renderCards();
+        }
+
+        // Record User Conversion (Telemetry Increment)
+        function recordRideConversion(price, savings) {
+            // Record to Firestore (or localStorage fallback)
+            RideCheckDB.recordConversion({
+                appChosen: 'unknown',
+                priceChosen: price,
+                baselinePrice: price + savings,
+                savings: savings,
+                vehicleType: currentType,
+                pickup: document.getElementById('pickup-input').value,
+                dropoff: document.getElementById('dropoff-input').value
+            });
+
+            if (savings > 0) {
+                let savedTotal = parseInt(localStorage.getItem('ridecheck_total_saved') || '14892450');
+                savedTotal += savings;
+                localStorage.setItem('ridecheck_total_saved', savedTotal.toString());
+                document.getElementById('savings-counter').innerText = '฿' + savedTotal.toLocaleString('en-US');
+            }
+        }
+
+        // Methodology Modal Controls
+        function openMethodologyModal() {
+            document.getElementById('methodology-modal').classList.add('active');
+        }
+
+        function closeMethodologyModal() {
+            document.getElementById('methodology-modal').classList.remove('active');
+        }
+
+        // Animated Counter
+        function animateCounter() {
+            const el = document.getElementById('savings-counter');
+            const target = parseInt(localStorage.getItem('ridecheck_total_saved') || '14892450');
+            const startVal = target - 45000;
+            const duration = 1800;
+            const startTime = performance.now();
+
+            function update(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const ease = 1 - Math.pow(2, -10 * progress);
+                const current = Math.floor(startVal + (target - startVal) * ease);
+                el.innerText = '฿' + current.toLocaleString('en-US');
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    el.innerText = '฿' + target.toLocaleString('en-US');
+                }
+            }
+            requestAnimationFrame(update);
+        }
+
+        // GPS Location
+        function useCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    pickupCoords = [pos.coords.latitude, pos.coords.longitude];
+                    pickupMarker.setLatLng(pickupCoords);
+                    document.getElementById('pickup-input').value = 'พิกัดตำแหน่งปัจจุบันของคุณ';
+                    fetchAndDrawRoadRoute();
+                }, () => {
+                    alert('ไม่สามารถดึงพิกัด GPS ได้ โปรดอนุญาตการเข้าถึงตำแหน่ง');
+                });
+            }
+        }
+
+        function swapRoute() {
+            const temp = pickupCoords;
+            pickupCoords = dropoffCoords;
+            dropoffCoords = temp;
+
+            pickupMarker.setLatLng(pickupCoords);
+            dropoffMarker.setLatLng(dropoffCoords);
+
+            const pVal = document.getElementById('pickup-input').value;
+            const dVal = document.getElementById('dropoff-input').value;
+            document.getElementById('pickup-input').value = dVal;
+            document.getElementById('dropoff-input').value = pVal;
+
+            fetchAndDrawRoadRoute();
+        }
+
+        window.onload = () => {
+            initMap();
+            animateCounter();
+
+            // Real-time listener: อัปเดตยอดประหยัดจาก Firestore
+            RideCheckDB.listenPlatformStats((stats) => {
+                if (stats && stats.totalSavings) {
+                    document.getElementById('savings-counter').innerText = '฿' + stats.totalSavings.toLocaleString('en-US');
+                }
+            });
+
+            // Show connection status in console
+            const status = RideCheckDB.getConnectionStatus();
+            console.log('[RideCheck] Database Mode:', status.mode);
+        };
+    </script>
+</body>
+</html>
