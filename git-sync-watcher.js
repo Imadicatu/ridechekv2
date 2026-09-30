@@ -136,6 +136,9 @@ async function performGitSync(reason = '') {
         if (pushRes.ok) {
             console.log(`✅ [Git-Sync สำเร็จ 100%] โค้ดล่าสุดถูกส่งไปยัง GitHub เรียบร้อยแล้ว!`);
             console.log(`🔗 คลัง GitHub: https://github.com/Imadicatu/ridechekv2`);
+            // อัปเดตสาขา gh-pages โดยตรงเพื่อให้หน้าเว็บ Live ทันที
+            await execCommand('git push origin main:gh-pages --force');
+            console.log(`🚀 [GitHub Pages Live] หน้าเว็บอัปเดตสดที่: https://imadicatu.github.io/ridechekv2/`);
         } else {
             console.error(`❌ [Git-Sync Push Failed]:`, pushRes.stderr || pushRes.error);
             console.log('💡 เคล็ดลับ: ลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ตหรือสิทธิ์การเข้าถึง GitHub');
