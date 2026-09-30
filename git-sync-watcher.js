@@ -75,6 +75,9 @@ async function performGitSync(reason = '') {
     }
 
     isSyncing = true;
+    const filesToSync = Array.from(changedFiles);
+    changedFiles.clear();
+
     const timestamp = getFormattedTimestamp();
     console.log(`\n====================================================================`);
     console.log(`🚀 [Git-Sync] เริ่มต้นกระบวนการ Auto-Deploy ไปยัง GitHub ณ ${timestamp}`);
@@ -101,9 +104,9 @@ async function performGitSync(reason = '') {
         await execCommand('git add -A');
 
         // 3. Commit ไฟล์ลงใน Local Branch
-        const fileListSummary = Array.from(changedFiles).slice(0, 3).map(f => path.basename(f)).join(', ');
+        const fileListSummary = filesToSync.slice(0, 3).map(f => path.basename(f)).join(', ');
         const commitMsg = fileListSummary 
-            ? `⚡ [Auto-Sync] Update ${fileListSummary}${changedFiles.size > 3 ? ` (+${changedFiles.size - 3} files)` : ''} (${timestamp})`
+            ? `⚡ [Auto-Sync] Update ${fileListSummary}${filesToSync.length > 3 ? ` (+${filesToSync.length - 3} files)` : ''} (${timestamp})`
             : `⚡ [Auto-Deploy] Sync Project Updates (${timestamp})`;
 
         console.log(`💾 [2/4] กำลังบันทึก Commit: "${commitMsg}"...`);
@@ -132,7 +135,6 @@ async function performGitSync(reason = '') {
     } catch (err) {
         console.error('❌ [Git-Sync Exception]:', err.message);
     } finally {
-        changedFiles.clear();
         isSyncing = false;
         console.log(`====================================================================\n`);
     }
@@ -143,12 +145,12 @@ function scheduleSync(filePath) {
 
     changedFiles.add(filePath);
     const rel = path.relative(ROOT_DIR, filePath);
-    console.log(`🔔 [File Saved] ตรวจพบการบันทึก: ${rel} (เตรียมส่งขึ้น GitHub ใน 4 วิ...)`);
+    console.log(`🔔 [File Saved] ตรวจพบการบันทึก: ${rel} (เตรียมส่งขึ้น GitHub ใน 2.5 วิ...)`);
 
     if (debounceTimer) clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
         performGitSync(`บันทึกไฟล์ล่าสุด: ${Array.from(changedFiles).map(f => path.basename(f)).join(', ')}`);
-    }, 4000); // ดีเลย์ 4 วินาทีเพื่อรอการเซฟหลายไฟล์พร้อมกัน
+    }, 2500); // ดีเลย์ 2.5 วินาทีเพื่อรอการเซฟหลายไฟล์พร้อมกัน
 }
 
 // โหมดรันครั้งเดียวจบ (--once)
