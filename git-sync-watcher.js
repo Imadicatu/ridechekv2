@@ -96,27 +96,27 @@ async function performGitSync(reason = '') {
             return;
         }
 
-        // 2. ดึงการอัปเดตล่าสุดจาก GitHub ก่อน (ป้องกัน conflict กับ bot-runner.yml)
-        console.log('📥 [1/4] ตรวจสอบและดึงการอัปเดตล่าสุดจาก GitHub (git pull --rebase)...');
-        const pullRes = await execCommand('git pull --rebase origin main');
-        if (!pullRes.ok) {
-            console.warn('⚠️ [Git-Sync Warning] ไม่สามารถ pull ได้ กำลังดำเนินการต่อ:', pullRes.stderr || pullRes.error);
-        }
-
-        // 3. Stage ไฟล์ที่เปลี่ยนแปลงทั้งหมด
-        console.log('📦 [2/4] กำลังจัดเตรียมไฟล์ (git add .)...');
+        // 2. Stage ไฟล์ที่เปลี่ยนแปลงทั้งหมด
+        console.log('📦 [1/4] กำลังจัดเตรียมไฟล์ (git add .)...');
         await execCommand('git add -A');
 
-        // 4. Commit ไฟล์
+        // 3. Commit ไฟล์ลงใน Local Branch
         const fileListSummary = Array.from(changedFiles).slice(0, 3).map(f => path.basename(f)).join(', ');
         const commitMsg = fileListSummary 
             ? `⚡ [Auto-Sync] Update ${fileListSummary}${changedFiles.size > 3 ? ` (+${changedFiles.size - 3} files)` : ''} (${timestamp})`
             : `⚡ [Auto-Deploy] Sync Project Updates (${timestamp})`;
 
-        console.log(`💾 [3/4] กำลังบันทึก Commit: "${commitMsg}"...`);
+        console.log(`💾 [2/4] กำลังบันทึก Commit: "${commitMsg}"...`);
         const commitRes = await execCommand(`git commit -m "${commitMsg}"`);
         if (!commitRes.ok && !commitRes.stdout.includes('nothing to commit')) {
             console.log('ℹ️ [Git-Sync] ไม่มีรายการที่ต้อง commit ใหม่');
+        }
+
+        // 4. ดึงการอัปเดตล่าสุดจาก GitHub (git pull --rebase ป้องกัน conflict กับ bot-runner.yml)
+        console.log('📥 [3/4] ตรวจสอบและดึงการอัปเดตล่าสุดจาก GitHub (git pull --rebase)...');
+        const pullRes = await execCommand('git pull --rebase origin main');
+        if (!pullRes.ok) {
+            console.warn('⚠️ [Git-Sync Warning] ไม่สามารถ pull ได้ กำลังดำเนินการต่อ:', pullRes.stderr || pullRes.error);
         }
 
         // 5. Push ขึ้น GitHub origin main
