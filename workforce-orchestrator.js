@@ -47,7 +47,11 @@ console.log('🤖 [2/3] กำลังเริ่ม AI Workforce Engine 14 �
 startProcess('AIWorkforce', 'worker-engine.js', ['--interval=15']);
 
 // 3. เริ่ม Telegram Baron Secretary Bot
-console.log('🎩 [3/3] กำลังเริ่ม Telegram Baron Bot (telegram-baron.js)...');
+console.log('🎩 [3/4] กำลังเริ่ม Telegram Baron Bot (telegram-baron.js)...');
 startProcess('BaronBot', 'telegram-baron.js');
 
-console.log('\n✨ ระบบทั้งหมดกำลังทำงานร่วมกันเต็มประสิทธิภาพ 100% (กด Ctrl+C เพื่อหยุด)');
+// 4. เริ่ม Git Auto-Deploy Watcher (ตรวจจับการ Save โค้ดแล้ว Push อัตโนมัติ)
+console.log('⚡ [4/4] กำลังเริ่ม Git Auto-Deploy Watcher (git-sync-watcher.js)...');
+startProcess('GitSync', 'git-sync-watcher.js', ['--watch']);
+
+console.log('\n✨ ระบบทั้งหมด (Web + 14 AI Departments + Telegram Baron + Git Auto-Deploy) กำลังทำงานร่วมกันเต็มประสิทธิภาพ 100% (กด Ctrl+C เพื่อหยุด)');

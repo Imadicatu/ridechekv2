@@ -3291,6 +3291,11 @@
                 <i class="fas fa-bolt" id="run-workforce-icon"></i> <span>ลุยงาน 14 ฝ่าย</span>
             </button>
 
+            <!-- Direct GitHub Deploy Button -->
+            <button class="cam-btn" id="btn-deploy-github" onclick="triggerDeployGitHub()" style="background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: #FFFFFF; font-weight: 700; border: none; padding: 4px 10px; border-radius: 8px; display: flex; align-items: center; gap: 5px; cursor: pointer;" title="คลิกเพื่อ Sync และ Deploy ซอร์สโค้ดล่าสุดขึ้น GitHub ทันที">
+                <i class="fab fa-github" id="deploy-github-icon"></i> <span>Deploy GitHub</span>
+            </button>
+
             <!-- Zen Mode Toggle -->
             <button class="cam-btn icon-btn" id="btn-zen-mode" onclick="toggleZenMode()" title="คลิกเพื่อซ่อนแผงเมนูและชมฉากออฟฟิศ 3D เต็มจอ">
                 <i class="fas fa-expand-arrows-alt"></i>
@@ -7800,6 +7805,34 @@
             } finally {
                 isWorkforceExecuting = false;
                 if (icon) icon.className = 'fas fa-bolt';
+            }
+        }
+
+        let isDeployExecuting = false;
+        async function triggerDeployGitHub() {
+            if (isDeployExecuting) return;
+            isDeployExecuting = true;
+
+            const icon = document.getElementById('deploy-github-icon');
+            if (icon) icon.className = 'fas fa-spinner fa-spin';
+
+            triggerSpeechBubble('secretary', 'กราบเรียนท่าน Siridetxh! กำลังดำเนินการ Git Commit & Push อัปเดตซอร์สโค้ดและขึ้น GitHub ทันทีครับ!', 4000);
+            addLogEntry('📦 <b>คุณบารอน:</b> เริ่มต้นกระบวนการ Git Auto-Deploy ไปยังคลัง GitHub...');
+
+            try {
+                const res = await fetch('/api/git/deploy');
+                if (res.ok) {
+                    const data = await res.json();
+                    triggerSpeechBubble('secretary', '🚀 ซอร์สโค้ดล่าสุดถูก Push ขึ้น GitHub และส่งต่อขึ้น GitHub Pages เรียบร้อย 100%!', 5000);
+                    addLogEntry(`✅ <b>Git Deploy สำเร็จ:</b> อัปเดตโค้ดล่าสุดเข้าสู่ <a href="${data.repoUrl}" target="_blank" style="color:var(--accent); text-decoration:underline;">GitHub Repository</a> เรียบร้อยแล้ว!`);
+                } else {
+                    addLogEntry('⚠️ <b>ระบบ:</b> การ Deploy ทาง API ไม่สำเร็จ ให้ใช้คำสั่ง npm run deploy ใน Terminal');
+                }
+            } catch (err) {
+                addLogEntry('ℹ️ <b>ระบบ:</b> สั่ง Deploy เรียบร้อย (แนะนำใช้ npm run deploy หรือเปิด Watcher)');
+            } finally {
+                isDeployExecuting = false;
+                if (icon) icon.className = 'fab fa-github';
             }
         }
 

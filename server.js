@@ -294,6 +294,45 @@ const server = http.createServer((req, res) => {
         return;
     }
 
+    // ===== GITHUB AUTO-DEPLOY ENDPOINTS =====
+    if (reqPath === '/api/git/deploy') {
+        const { exec } = require('child_process');
+        const syncScript = path.join(ROOT_DIR, 'git-sync-watcher.js');
+        
+        exec(`node "${syncScript}" --once`, { cwd: ROOT_DIR }, (error, stdout, stderr) => {
+            if (error) {
+                res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+                res.end(JSON.stringify({ ok: false, error: error.message, stderr }));
+                return;
+            }
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({
+                ok: true,
+                message: 'บันทึกและ Deploy ซอร์สโค้ดขึ้น GitHub สำเร็จเรียบร้อย 100%',
+                repoUrl: 'https://github.com/Imadicatu/ridechekv2',
+                pagesUrl: 'https://imadicatu.github.io/ridechekv2/',
+                output: stdout
+            }));
+        });
+        return;
+    }
+
+    if (reqPath === '/api/git/status') {
+        const { exec } = require('child_process');
+        exec('git log -1 --format="%h - %s (%cr)"', { cwd: ROOT_DIR }, (err, stdout) => {
+            exec('git status --porcelain', { cwd: ROOT_DIR }, (err2, stdout2) => {
+                res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+                res.end(JSON.stringify({
+                    ok: true,
+                    lastCommit: stdout ? stdout.trim() : 'Unknown',
+                    pendingChangesCount: stdout2 ? stdout2.trim().split('\n').filter(Boolean).length : 0,
+                    repoUrl: 'https://github.com/Imadicatu/ridechekv2'
+                }));
+            });
+        });
+        return;
+    }
+
     if (reqPath === '/' || reqPath === '') {
         reqPath = '/index.html';
     }

@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node server.js",
     "all": "node workforce-orchestrator.js",
+    "sync": "node git-sync-watcher.js --once",
+    "deploy": "node git-sync-watcher.js --once",
+    "watch:git": "node git-sync-watcher.js --watch",
     "baron": "node telegram-baron.js",
     "worker": "node worker-engine.js",
     "worker:once": "node worker-engine.js --once",

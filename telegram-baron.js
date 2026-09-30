@@ -260,6 +260,7 @@ async function handleMessage(msg) {
         'ท่านสามารถสั่งงานและเช็คสถานะกับพนักงานทั้ง 14 แผนกได้ทันที:\n' +
         '• สั่งงานแผนก: /bizdev, /fin, /dev, /pm, /cs ฯลฯ\n' +
         '• ⚡ รันงาน 14 ฝ่ายทันที: /workforce หรือ /run\n' +
+        '• 🚀 Deploy ขึ้น GitHub: /deploy หรือ /sync\n' +
         '• เช็ครายชื่อทีมงาน: /staff\n' +
         '• ส่งข่าวสารให้ทุกคน: /broadcast <ข้อความ>\n' +
         '• ตรวจสอบยอดคนติดตาม: /subscribers'
@@ -290,6 +291,27 @@ async function handleMessage(msg) {
         `💰 ต้นทุนดำเนินงาน: ฿0.00 (Zero-Budget)\n` +
         `🛡️ สถานะความปลอดภัย: OWASP Pass & Zero-PII Shield\n` +
         `📊 ทีมงานพร้อมส่งมอบงานตรงสู่โต๊ะทำงานของท่านเรียบร้อยแล้วครับ!`
+      );
+    });
+    return;
+  }
+
+  // คำสั่งสั่ง Deploy ซอร์สโค้ดล่าสุดขึ้น GitHub (/deploy หรือ /sync)
+  if (rawText === '/deploy' || rawText === '/sync') {
+    if (!ALLOWED_ADMINS.includes(userId)) {
+      return sendMessage(chatId, '⛔ คำสั่งนี้สงวนสิทธิ์เฉพาะฝ่ายบริหารเท่านั้นครับ');
+    }
+    await sendMessage(chatId, `📦 ท่าน ${userName}! คุณบารอนกำลังดำเนินการ Git Commit & Push โค้ดล่าสุดไปยัง GitHub...`);
+    const { exec } = require('child_process');
+    const syncScript = path.join(__dirname, 'git-sync-watcher.js');
+    exec(`node "${syncScript}" --once`, { cwd: __dirname }, (error, stdout, stderr) => {
+      if (error) {
+        return sendMessage(chatId, `❌ การ Deploy เกิดข้อผิดพลาด: ${error.message}\n${stderr}`);
+      }
+      sendMessage(chatId, `🚀 [รายงานสถานะ GitHub Deploy สำเร็จ]\n━━━━━━━━━━━━━━━━━━\n` +
+        `✅ ซอร์สโค้ดและเว็บเวอร์ชันล่าสุดถูก Push ขึ้น GitHub เรียบร้อยแล้ว 100%!\n` +
+        `🔗 คลังโปรเจกต์: https://github.com/Imadicatu/ridechekv2\n` +
+        `🌐 หน้าเว็บ GitHub Pages: https://imadicatu.github.io/ridechekv2/`
       );
     });
     return;
