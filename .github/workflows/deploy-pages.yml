@@ -4,14 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'index.html'
-      - 'office.html'
-      - 'v2.html'
-      - 'styles.css'
-      - 'app.js'
-      - 'ridecheck-db.js'
-      - 'blog-*.html'
   workflow_dispatch:
 
 permissions:

@@ -122,9 +122,17 @@ async function performGitSync(reason = '') {
             console.warn('⚠️ [Git-Sync Warning] ไม่สามารถ pull ได้ กำลังดำเนินการต่อ:', pullRes.stderr || pullRes.error);
         }
 
-        // 5. Push ขึ้น GitHub origin main
+        // 5. Push ขึ้น GitHub origin main (พร้อม Auto-Retry 3 ครั้ง หาก remote ref เปลี่ยนแปลง)
         console.log('🌐 [4/4] กำลัง Push ขึ้น GitHub repository (origin main)...');
-        const pushRes = await execCommand('git push origin main');
+        let pushRes = await execCommand('git push origin main');
+        let retries = 0;
+        while (!pushRes.ok && retries < 2) {
+            retries++;
+            console.log(`🔄 [Git-Sync Retry] Remote มี commit ใหม่ กำลัง rebase และลอง push ครั้งที่ ${retries + 1}...`);
+            await execCommand('git pull --rebase origin main');
+            pushRes = await execCommand('git push origin main');
+        }
+
         if (pushRes.ok) {
             console.log(`✅ [Git-Sync สำเร็จ 100%] โค้ดล่าสุดถูกส่งไปยัง GitHub เรียบร้อยแล้ว!`);
             console.log(`🔗 คลัง GitHub: https://github.com/Imadicatu/ridechekv2`);
