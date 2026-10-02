@@ -2,7 +2,7 @@
   "projectName": "RideCheck Thailand",
   "version": "2.1.0-connected",
   "environment": "Production-Ready LocalHQ",
-  "lastUpdated": "2026-10-02T06:11:06.903Z",
+  "lastUpdated": "2026-10-02T06:46:37.584Z",
   "executiveLeader": {
     "title": "ประธานเจ้าหน้าที่บริหาร (CEO)",
     "name": "ท่าน Siridetxh"
@@ -35,12 +35,12 @@
         "health": "PERFECT_HEALTH",
         "latencies": {
           "spatialCacheMs": 0,
-          "googleMapsTileMs": 215,
-          "openStreetMapTileMs": 308,
-          "osrmRoutingApiMs": 749,
-          "cartoDbVoyagerMs": 328
+          "googleMapsTileMs": 356,
+          "openStreetMapTileMs": 187,
+          "osrmRoutingApiMs": 727,
+          "cartoDbVoyagerMs": 229
         },
-        "lastChecked": "2026-10-02T06:11:06.210Z"
+        "lastChecked": "2026-10-02T06:46:36.837Z"
       },
       "deepLinks": {
         "grab": "https://r.grab.com/travel",
@@ -148,8 +148,8 @@
       "surgeReason": "สภาวะปกติ (ดีมานด์คงที่ ไม่เร่งด่วน)",
       "weather": {
         "condition": "แจ่มใส / ท้องฟ้าโปร่ง",
-        "rainMm": 0,
-        "temperatureC": 33.4,
+        "rainMm": 0.1,
+        "temperatureC": 30,
         "city": "Bangkok, Thailand"
       }
     },
@@ -221,7 +221,7 @@
       ],
       "currentSprint": "Sprint 3: Autonomous Continuous-Learning & Self-Driven Organization",
       "teamVelocity": "99.6%",
-      "lastDispatch": "2026-10-02T06:11:04.791Z"
+      "lastDispatch": "2026-10-02T06:46:35.500Z"
     },
     "webdev": {
       "lead": "WebDev UX/UI (ฝ่ายพัฒนา & ออกแบบ UX/UI ต่อเนื่อง 24 ชม.)",
@@ -248,7 +248,7 @@
         "viewportMode": "100dvh & Safe-Area Aware",
         "touchTargetMin": "44px"
       },
-      "lastChecked": "2026-10-02T06:11:06.223Z"
+      "lastChecked": "2026-10-02T06:46:36.850Z"
     },
     "hr": {
       "lead": "คุณเอวา (HR & Training Director / ฝ่ายพัฒนาศักยภาพ AI)",
@@ -284,7 +284,7 @@
         "hr": "Adaptive AI Pedagogy & Continuous Workforce Upskilling Matrix",
         "baron": "Executive QA Synthesis, Precision Auditing & CEO Direct Briefing"
       },
-      "lastBuffTimestamp": "2026-10-02T06:11:04.783Z"
+      "lastBuffTimestamp": "2026-10-02T06:46:35.492Z"
     },
     "bizdev": {
       "lead": "คุณธนพล (BizDevBot / ฝ่ายพันธมิตรธุรกิจ & การสร้างรายได้)",
@@ -340,7 +340,7 @@
       ],
       "systemStatus": "HEALTHY",
       "integrityScore": "100%",
-      "lastIntegrityCheck": "2026-10-02T06:11:06.216Z"
+      "lastIntegrityCheck": "2026-10-02T06:46:36.843Z"
     },
     "sec": {
       "lead": "SecBot (Information Security & Threat Guard)",
@@ -360,7 +360,7 @@
       "leakedSecretsFound": 0,
       "owaspCompliance": "100%_SECURE",
       "antiScrapingProtection": "ACTIVE",
-      "lastAudit": "2026-10-02T06:11:06.897Z"
+      "lastAudit": "2026-10-02T06:46:37.578Z"
     },
     "fin": {
       "lead": "FinBot (FinOps & Quota Optimization Lead)",
@@ -379,7 +379,7 @@
       "estimatedMinutesUsed": 32,
       "quotaRemainingPercent": "98.4%",
       "totalCloudCostThb": "฿0.00",
-      "lastAudit": "2026-10-02T06:11:06.902Z"
+      "lastAudit": "2026-10-02T06:46:37.584Z"
     }
   },
   "learningFlows": [
