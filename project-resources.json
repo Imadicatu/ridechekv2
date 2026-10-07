@@ -2,7 +2,7 @@
   "projectName": "RideCheck Thailand",
   "version": "2.1.0-connected",
   "environment": "Production-Ready LocalHQ",
-  "lastUpdated": "2026-10-07T20:09:17.992Z",
+  "lastUpdated": "2026-10-07T20:42:11.828Z",
   "executiveLeader": {
     "title": "ประธานเจ้าหน้าที่บริหาร (CEO)",
     "name": "ท่าน Siridetxh"
@@ -35,12 +35,12 @@
         "health": "PERFECT_HEALTH",
         "latencies": {
           "spatialCacheMs": 0,
-          "googleMapsTileMs": 268,
-          "openStreetMapTileMs": 103,
-          "osrmRoutingApiMs": 808,
-          "cartoDbVoyagerMs": 111
+          "googleMapsTileMs": 213,
+          "openStreetMapTileMs": 63,
+          "osrmRoutingApiMs": 1249,
+          "cartoDbVoyagerMs": 110
         },
-        "lastChecked": "2026-10-07T20:09:17.045Z"
+        "lastChecked": "2026-10-07T20:42:11.073Z"
       },
       "deepLinks": {
         "grab": "https://r.grab.com/travel",
@@ -70,7 +70,7 @@
         "สแกนเปรียบเทียบค่าโดยสารระหว่าง 5 แอป",
         "ออกแบบ Schema PostgreSQL สำหรับจัดเก็บประวัติราคา"
       ],
-      "activeSurgeMultiplier": 1.25,
+      "activeSurgeMultiplier": 1,
       "baseFare": {
         "bike": {
           "grab": 35,
@@ -145,11 +145,11 @@
           "indrive": 20
         }
       },
-      "surgeReason": "ฝนตกนอกชั่วโมงเร่งด่วน (มีละอองฝนโปรยปราย ดีมานด์รถสูง ตัวคูณ 1.25x)",
+      "surgeReason": "สภาวะปกติ (ดีมานด์คงที่ ไม่เร่งด่วน)",
       "weather": {
-        "condition": "มีละอองฝนโปรยปราย",
-        "rainMm": 0.1,
-        "temperatureC": 25,
+        "condition": "แจ่มใส / ท้องฟ้าโปร่ง",
+        "rainMm": 0,
+        "temperatureC": 24.8,
         "city": "Bangkok, Thailand"
       }
     },
@@ -221,7 +221,7 @@
       ],
       "currentSprint": "Sprint 3: Autonomous Continuous-Learning & Self-Driven Organization",
       "teamVelocity": "99.6%",
-      "lastDispatch": "2026-10-07T20:09:15.538Z"
+      "lastDispatch": "2026-10-07T20:42:09.193Z"
     },
     "webdev": {
       "lead": "WebDev UX/UI (ฝ่ายพัฒนา & ออกแบบ UX/UI ต่อเนื่อง 24 ชม.)",
@@ -248,7 +248,7 @@
         "viewportMode": "100dvh & Safe-Area Aware",
         "touchTargetMin": "44px"
       },
-      "lastChecked": "2026-10-07T20:09:17.064Z"
+      "lastChecked": "2026-10-07T20:42:11.083Z"
     },
     "hr": {
       "lead": "คุณเอวา (HR & Training Director / ฝ่ายพัฒนาศักยภาพ AI)",
@@ -284,7 +284,7 @@
         "hr": "Adaptive AI Pedagogy & Continuous Workforce Upskilling Matrix",
         "baron": "Executive QA Synthesis, Precision Auditing & CEO Direct Briefing"
       },
-      "lastBuffTimestamp": "2026-10-07T20:09:15.530Z"
+      "lastBuffTimestamp": "2026-10-07T20:42:09.186Z"
     },
     "bizdev": {
       "lead": "คุณธนพล (BizDevBot / ฝ่ายพันธมิตรธุรกิจ & การสร้างรายได้)",
@@ -340,7 +340,7 @@
       ],
       "systemStatus": "HEALTHY",
       "integrityScore": "100%",
-      "lastIntegrityCheck": "2026-10-07T20:09:17.055Z"
+      "lastIntegrityCheck": "2026-10-07T20:42:11.078Z"
     },
     "sec": {
       "lead": "SecBot (Information Security & Threat Guard)",
@@ -360,7 +360,7 @@
       "leakedSecretsFound": 0,
       "owaspCompliance": "100%_SECURE",
       "antiScrapingProtection": "ACTIVE",
-      "lastAudit": "2026-10-07T20:09:17.951Z"
+      "lastAudit": "2026-10-07T20:42:11.821Z"
     },
     "fin": {
       "lead": "FinBot (FinOps & Quota Optimization Lead)",
@@ -379,7 +379,7 @@
       "estimatedMinutesUsed": 32,
       "quotaRemainingPercent": "98.4%",
       "totalCloudCostThb": "฿0.00",
-      "lastAudit": "2026-10-07T20:09:17.992Z"
+      "lastAudit": "2026-10-07T20:42:11.827Z"
     }
   },
   "learningFlows": [
