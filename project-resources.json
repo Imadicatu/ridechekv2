@@ -2,7 +2,7 @@
   "projectName": "RideCheck Thailand",
   "version": "2.1.0-connected",
   "environment": "Production-Ready LocalHQ",
-  "lastUpdated": "2026-10-08T22:42:23.051Z",
+  "lastUpdated": "2026-10-08T23:08:59.416Z",
   "executiveLeader": {
     "title": "ประธานเจ้าหน้าที่บริหาร (CEO)",
     "name": "ท่าน Siridetxh"
@@ -35,12 +35,12 @@
         "health": "PERFECT_HEALTH",
         "latencies": {
           "spatialCacheMs": 0,
-          "googleMapsTileMs": 299,
-          "openStreetMapTileMs": 15,
-          "osrmRoutingApiMs": 800,
-          "cartoDbVoyagerMs": 49
+          "googleMapsTileMs": 91,
+          "openStreetMapTileMs": 36,
+          "osrmRoutingApiMs": 1280,
+          "cartoDbVoyagerMs": 101
         },
-        "lastChecked": "2026-10-08T22:42:21.781Z"
+        "lastChecked": "2026-10-08T23:08:58.829Z"
       },
       "deepLinks": {
         "grab": "https://r.grab.com/travel",
@@ -221,7 +221,7 @@
       ],
       "currentSprint": "Sprint 3: Autonomous Continuous-Learning & Self-Driven Organization",
       "teamVelocity": "99.6%",
-      "lastDispatch": "2026-10-08T22:42:20.094Z"
+      "lastDispatch": "2026-10-08T23:08:56.798Z"
     },
     "webdev": {
       "lead": "WebDev UX/UI (ฝ่ายพัฒนา & ออกแบบ UX/UI ต่อเนื่อง 24 ชม.)",
@@ -248,7 +248,7 @@
         "viewportMode": "100dvh & Safe-Area Aware",
         "touchTargetMin": "44px"
       },
-      "lastChecked": "2026-10-08T22:42:21.795Z"
+      "lastChecked": "2026-10-08T23:08:58.843Z"
     },
     "hr": {
       "lead": "คุณเอวา (HR & Training Director / ฝ่ายพัฒนาศักยภาพ AI)",
@@ -284,7 +284,7 @@
         "hr": "Adaptive AI Pedagogy & Continuous Workforce Upskilling Matrix",
         "baron": "Executive QA Synthesis, Precision Auditing & CEO Direct Briefing"
       },
-      "lastBuffTimestamp": "2026-10-08T22:42:20.086Z"
+      "lastBuffTimestamp": "2026-10-08T23:08:56.790Z"
     },
     "bizdev": {
       "lead": "คุณธนพล (BizDevBot / ฝ่ายพันธมิตรธุรกิจ & การสร้างรายได้)",
@@ -340,7 +340,7 @@
       ],
       "systemStatus": "HEALTHY",
       "integrityScore": "100%",
-      "lastIntegrityCheck": "2026-10-08T22:42:21.788Z"
+      "lastIntegrityCheck": "2026-10-08T23:08:58.836Z"
     },
     "sec": {
       "lead": "SecBot (Information Security & Threat Guard)",
@@ -360,7 +360,7 @@
       "leakedSecretsFound": 0,
       "owaspCompliance": "100%_SECURE",
       "antiScrapingProtection": "ACTIVE",
-      "lastAudit": "2026-10-08T22:42:23.045Z"
+      "lastAudit": "2026-10-08T23:08:59.411Z"
     },
     "fin": {
       "lead": "FinBot (FinOps & Quota Optimization Lead)",
@@ -379,7 +379,7 @@
       "estimatedMinutesUsed": 32,
       "quotaRemainingPercent": "98.4%",
       "totalCloudCostThb": "฿0.00",
-      "lastAudit": "2026-10-08T22:42:23.050Z"
+      "lastAudit": "2026-10-08T23:08:59.416Z"
     }
   },
   "learningFlows": [
