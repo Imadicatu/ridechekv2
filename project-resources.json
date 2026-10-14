@@ -2,7 +2,7 @@
   "projectName": "RideCheck Thailand",
   "version": "2.1.0-connected",
   "environment": "Production-Ready LocalHQ",
-  "lastUpdated": "2026-10-14T02:55:49.985Z",
+  "lastUpdated": "2026-10-14T03:22:10.348Z",
   "executiveLeader": {
     "title": "ประธานเจ้าหน้าที่บริหาร (CEO)",
     "name": "ท่าน Siridetxh"
@@ -35,12 +35,12 @@
         "health": "PERFECT_HEALTH",
         "latencies": {
           "spatialCacheMs": 0,
-          "googleMapsTileMs": 116,
-          "openStreetMapTileMs": 57,
-          "osrmRoutingApiMs": 1121,
-          "cartoDbVoyagerMs": 76
+          "googleMapsTileMs": 400,
+          "openStreetMapTileMs": 37,
+          "osrmRoutingApiMs": 770,
+          "cartoDbVoyagerMs": 121
         },
-        "lastChecked": "2026-10-14T02:55:49.275Z"
+        "lastChecked": "2026-10-14T03:22:09.701Z"
       },
       "deepLinks": {
         "grab": "https://r.grab.com/travel",
@@ -148,8 +148,8 @@
       "surgeReason": "ฝนตกนอกชั่วโมงเร่งด่วน (มีละอองฝนโปรยปราย ดีมานด์รถสูง ตัวคูณ 1.25x)",
       "weather": {
         "condition": "มีละอองฝนโปรยปราย",
-        "rainMm": 0.1,
-        "temperatureC": 28.2,
+        "rainMm": 0,
+        "temperatureC": 28.5,
         "city": "Bangkok, Thailand"
       }
     },
@@ -221,7 +221,7 @@
       ],
       "currentSprint": "Sprint 3: Autonomous Continuous-Learning & Self-Driven Organization",
       "teamVelocity": "99.6%",
-      "lastDispatch": "2026-10-14T02:55:47.890Z"
+      "lastDispatch": "2026-10-14T03:22:08.262Z"
     },
     "webdev": {
       "lead": "WebDev UX/UI (ฝ่ายพัฒนา & ออกแบบ UX/UI ต่อเนื่อง 24 ชม.)",
@@ -248,7 +248,7 @@
         "viewportMode": "100dvh & Safe-Area Aware",
         "touchTargetMin": "44px"
       },
-      "lastChecked": "2026-10-14T02:55:49.287Z"
+      "lastChecked": "2026-10-14T03:22:09.709Z"
     },
     "hr": {
       "lead": "คุณเอวา (HR & Training Director / ฝ่ายพัฒนาศักยภาพ AI)",
@@ -284,7 +284,7 @@
         "hr": "Adaptive AI Pedagogy & Continuous Workforce Upskilling Matrix",
         "baron": "Executive QA Synthesis, Precision Auditing & CEO Direct Briefing"
       },
-      "lastBuffTimestamp": "2026-10-14T02:55:47.882Z"
+      "lastBuffTimestamp": "2026-10-14T03:22:08.257Z"
     },
     "bizdev": {
       "lead": "คุณธนพล (BizDevBot / ฝ่ายพันธมิตรธุรกิจ & การสร้างรายได้)",
@@ -340,7 +340,7 @@
       ],
       "systemStatus": "HEALTHY",
       "integrityScore": "100%",
-      "lastIntegrityCheck": "2026-10-14T02:55:49.281Z"
+      "lastIntegrityCheck": "2026-10-14T03:22:09.705Z"
     },
     "sec": {
       "lead": "SecBot (Information Security & Threat Guard)",
@@ -360,7 +360,7 @@
       "leakedSecretsFound": 0,
       "owaspCompliance": "100%_SECURE",
       "antiScrapingProtection": "ACTIVE",
-      "lastAudit": "2026-10-14T02:55:49.980Z"
+      "lastAudit": "2026-10-14T03:22:10.344Z"
     },
     "fin": {
       "lead": "FinBot (FinOps & Quota Optimization Lead)",
@@ -379,7 +379,7 @@
       "estimatedMinutesUsed": 32,
       "quotaRemainingPercent": "98.4%",
       "totalCloudCostThb": "฿0.00",
-      "lastAudit": "2026-10-14T02:55:49.985Z"
+      "lastAudit": "2026-10-14T03:22:10.347Z"
     }
   },
   "learningFlows": [
