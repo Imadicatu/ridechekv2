@@ -2,7 +2,7 @@
   "projectName": "RideCheck Thailand",
   "version": "2.1.0-connected",
   "environment": "Production-Ready LocalHQ",
-  "lastUpdated": "2026-10-14T11:58:01.637Z",
+  "lastUpdated": "2026-10-14T12:32:37.655Z",
   "executiveLeader": {
     "title": "ประธานเจ้าหน้าที่บริหาร (CEO)",
     "name": "ท่าน Siridetxh"
@@ -35,12 +35,12 @@
         "health": "PERFECT_HEALTH",
         "latencies": {
           "spatialCacheMs": 0,
-          "googleMapsTileMs": 87,
-          "openStreetMapTileMs": 38,
-          "osrmRoutingApiMs": 657,
-          "cartoDbVoyagerMs": 109
+          "googleMapsTileMs": 68,
+          "openStreetMapTileMs": 23,
+          "osrmRoutingApiMs": 612,
+          "cartoDbVoyagerMs": 55
         },
-        "lastChecked": "2026-10-14T11:58:01.020Z"
+        "lastChecked": "2026-10-14T12:32:36.575Z"
       },
       "deepLinks": {
         "grab": "https://r.grab.com/travel",
@@ -221,7 +221,7 @@
       ],
       "currentSprint": "Sprint 3: Autonomous Continuous-Learning & Self-Driven Organization",
       "teamVelocity": "99.6%",
-      "lastDispatch": "2026-10-14T11:57:59.670Z"
+      "lastDispatch": "2026-10-14T12:32:35.749Z"
     },
     "webdev": {
       "lead": "WebDev UX/UI (ฝ่ายพัฒนา & ออกแบบ UX/UI ต่อเนื่อง 24 ชม.)",
@@ -248,7 +248,7 @@
         "viewportMode": "100dvh & Safe-Area Aware",
         "touchTargetMin": "44px"
       },
-      "lastChecked": "2026-10-14T11:58:01.033Z"
+      "lastChecked": "2026-10-14T12:32:36.590Z"
     },
     "hr": {
       "lead": "คุณเอวา (HR & Training Director / ฝ่ายพัฒนาศักยภาพ AI)",
@@ -284,7 +284,7 @@
         "hr": "Adaptive AI Pedagogy & Continuous Workforce Upskilling Matrix",
         "baron": "Executive QA Synthesis, Precision Auditing & CEO Direct Briefing"
       },
-      "lastBuffTimestamp": "2026-10-14T11:57:59.662Z"
+      "lastBuffTimestamp": "2026-10-14T12:32:35.740Z"
     },
     "bizdev": {
       "lead": "คุณธนพล (BizDevBot / ฝ่ายพันธมิตรธุรกิจ & การสร้างรายได้)",
@@ -340,7 +340,7 @@
       ],
       "systemStatus": "HEALTHY",
       "integrityScore": "100%",
-      "lastIntegrityCheck": "2026-10-14T11:58:01.027Z"
+      "lastIntegrityCheck": "2026-10-14T12:32:36.581Z"
     },
     "sec": {
       "lead": "SecBot (Information Security & Threat Guard)",
@@ -360,7 +360,7 @@
       "leakedSecretsFound": 0,
       "owaspCompliance": "100%_SECURE",
       "antiScrapingProtection": "ACTIVE",
-      "lastAudit": "2026-10-14T11:58:01.632Z"
+      "lastAudit": "2026-10-14T12:32:37.650Z"
     },
     "fin": {
       "lead": "FinBot (FinOps & Quota Optimization Lead)",
@@ -379,7 +379,7 @@
       "estimatedMinutesUsed": 32,
       "quotaRemainingPercent": "98.4%",
       "totalCloudCostThb": "฿0.00",
-      "lastAudit": "2026-10-14T11:58:01.637Z"
+      "lastAudit": "2026-10-14T12:32:37.655Z"
     }
   },
   "learningFlows": [
