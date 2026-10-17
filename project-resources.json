@@ -2,7 +2,7 @@
   "projectName": "RideCheck Thailand",
   "version": "2.1.0-connected",
   "environment": "Production-Ready LocalHQ",
-  "lastUpdated": "2026-10-17T16:15:31.377Z",
+  "lastUpdated": "2026-10-17T16:52:12.015Z",
   "executiveLeader": {
     "title": "ประธานเจ้าหน้าที่บริหาร (CEO)",
     "name": "ท่าน Siridetxh"
@@ -35,12 +35,12 @@
         "health": "PERFECT_HEALTH",
         "latencies": {
           "spatialCacheMs": 0,
-          "googleMapsTileMs": 92,
-          "openStreetMapTileMs": 17,
-          "osrmRoutingApiMs": 805,
-          "cartoDbVoyagerMs": 111
+          "googleMapsTileMs": 72,
+          "openStreetMapTileMs": 47,
+          "osrmRoutingApiMs": 654,
+          "cartoDbVoyagerMs": 125
         },
-        "lastChecked": "2026-10-17T16:15:30.608Z"
+        "lastChecked": "2026-10-17T16:52:11.242Z"
       },
       "deepLinks": {
         "grab": "https://r.grab.com/travel",
@@ -221,7 +221,7 @@
       ],
       "currentSprint": "Sprint 3: Autonomous Continuous-Learning & Self-Driven Organization",
       "teamVelocity": "99.6%",
-      "lastDispatch": "2026-10-17T16:15:28.939Z"
+      "lastDispatch": "2026-10-17T16:52:10.373Z"
     },
     "webdev": {
       "lead": "WebDev UX/UI (ฝ่ายพัฒนา & ออกแบบ UX/UI ต่อเนื่อง 24 ชม.)",
@@ -248,7 +248,7 @@
         "viewportMode": "100dvh & Safe-Area Aware",
         "touchTargetMin": "44px"
       },
-      "lastChecked": "2026-10-17T16:15:30.621Z"
+      "lastChecked": "2026-10-17T16:52:11.257Z"
     },
     "hr": {
       "lead": "คุณเอวา (HR & Training Director / ฝ่ายพัฒนาศักยภาพ AI)",
@@ -284,7 +284,7 @@
         "hr": "Adaptive AI Pedagogy & Continuous Workforce Upskilling Matrix",
         "baron": "Executive QA Synthesis, Precision Auditing & CEO Direct Briefing"
       },
-      "lastBuffTimestamp": "2026-10-17T16:15:28.816Z"
+      "lastBuffTimestamp": "2026-10-17T16:52:10.364Z"
     },
     "bizdev": {
       "lead": "คุณธนพล (BizDevBot / ฝ่ายพันธมิตรธุรกิจ & การสร้างรายได้)",
@@ -340,7 +340,7 @@
       ],
       "systemStatus": "HEALTHY",
       "integrityScore": "100%",
-      "lastIntegrityCheck": "2026-10-17T16:15:30.615Z"
+      "lastIntegrityCheck": "2026-10-17T16:52:11.248Z"
     },
     "sec": {
       "lead": "SecBot (Information Security & Threat Guard)",
@@ -360,7 +360,7 @@
       "leakedSecretsFound": 0,
       "owaspCompliance": "100%_SECURE",
       "antiScrapingProtection": "ACTIVE",
-      "lastAudit": "2026-10-17T16:15:31.370Z"
+      "lastAudit": "2026-10-17T16:52:12.007Z"
     },
     "fin": {
       "lead": "FinBot (FinOps & Quota Optimization Lead)",
@@ -379,7 +379,7 @@
       "estimatedMinutesUsed": 32,
       "quotaRemainingPercent": "98.4%",
       "totalCloudCostThb": "฿0.00",
-      "lastAudit": "2026-10-17T16:15:31.376Z"
+      "lastAudit": "2026-10-17T16:52:12.014Z"
     }
   },
   "learningFlows": [
